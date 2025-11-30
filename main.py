@@ -131,9 +131,9 @@ def main():
     
     plt.figure(figsize=(12, 5))
     plt.plot(daily_counts.index, daily_counts.values, marker='o', color='steelblue')
-    plt.title("Ticket Creation Trend (Last 30 Days)")
-    plt.xlabel("Date")
-    plt.ylabel("Number of Tickets")
+    plt.title("Тренд создания тикетов за последние 30 дней")
+    plt.xlabel("Дата")
+    plt.ylabel("Количество тикетов")
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, "ticket_trend.png"))
@@ -146,9 +146,9 @@ def main():
     
     plt.figure(figsize=(12, 5))
     plt.bar(hourly_counts.index, hourly_counts.values, color='orange')
-    plt.title("Ticket Distribution by Hour of Day")
-    plt.xlabel("Hour")
-    plt.ylabel("Number of Tickets")
+    plt.title("Распределение тикетов по часам суток")
+    plt.xlabel("Час")
+    plt.ylabel("Количество тикетов")
     plt.xticks(range(0, 24))
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, "ticket_by_hour.png"))
@@ -165,11 +165,11 @@ def main():
     
     plt.figure(figsize=(14, 6))
     im = plt.imshow(heatmap_matrix, cmap="YlGnBu", aspect='auto', origin='lower')
-    plt.colorbar(im, label='Number of Tickets')
-    plt.xlabel("Hour")
-    plt.ylabel("Day of Week")
-    plt.title("Activity Heatmap: Day of Week vs. Hour")
-    plt.yticks(ticks=range(7), labels=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"])
+    plt.colorbar(im, label='Количество тикетов')
+    plt.xlabel("Час")
+    plt.ylabel("День недели")
+    plt.title("Тепловая карта активности: день недели и час")
+    plt.yticks(ticks=range(7), labels=["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"])
     plt.xticks(ticks=range(0, 24, 2))
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, "heatmap_weekday_hour.png"))
@@ -182,7 +182,7 @@ def main():
     
     plt.figure(figsize=(9, 9))
     plt.pie(category_counts.values, labels=category_counts.index, autopct='%1.1f%%', startangle=140)
-    plt.title("Ticket Distribution by Category")
+    plt.title("Распределение тикетов по категориям")
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, "categories_pie.png"))
     plt.close()
@@ -195,8 +195,8 @@ def main():
         avg_resolve_time = resolved_tickets.groupby("category_name")["resolve_time_hours"].mean().sort_values()
         plt.figure(figsize=(10, 7))
         plt.barh(avg_resolve_time.index, avg_resolve_time.values, color='green')
-        plt.title("Average Ticket Resolution Time by Category (Hours)")
-        plt.xlabel("Average Time (Hours)")
+        plt.title("Среднее время решения тикета по категориям (часы)")
+        plt.xlabel("Среднее время (часы)")
         plt.tight_layout()
         plt.savefig(os.path.join(OUTPUT_DIR, "avg_resolve_time.png"))
         plt.close()
@@ -208,7 +208,7 @@ def main():
     logger.info("Generating Top-5 most problematic categories report...")
     top5 = category_counts.head(5)
     top5_str = top5.to_string()
-    logger.info(f"Top-5 most problematic categories:\n{top5_str}")
+    logger.info(f"Топ-5 самых проблемных категорий:\n{top5_str}")
     top5.to_csv(os.path.join(OUTPUT_DIR, "top5_categories.csv"), header=["Count"], encoding="utf-8")
     logger.info("Saved 'top5_categories.csv'")
 
@@ -222,11 +222,11 @@ def main():
             tl_df.sort_values("date", inplace=True)
             
             plt.figure(figsize=(12, 6))
-            plt.plot(tl_df["date"], tl_df["tickets_created"], label="Opened", marker='o')
-            plt.plot(tl_df["date"], tl_df["tickets_resolved"], label="Resolved", marker='x')
-            plt.title("Timeline of Opened vs. Resolved Tickets (30 Days)")
-            plt.xlabel("Date")
-            plt.ylabel("Number of Tickets")
+            plt.plot(tl_df["date"], tl_df["tickets_created"], label="Открытые", marker='o')
+            plt.plot(tl_df["date"], tl_df["tickets_resolved"], label="Закрытые", marker='x')
+            plt.title("Динамика открытых и закрытых тикетов за последние 30 дней")
+            plt.xlabel("Дата")
+            plt.ylabel("Количество тикетов")
             plt.legend()
             plt.xticks(rotation=45)
             plt.tight_layout()
@@ -252,18 +252,16 @@ def generate_pdf_report():
 
     pdf_path = os.path.join(OUTPUT_DIR, "support_analytics_report.pdf")
 
-    # === Регистрация шрифта с кириллицей ===
+    # === Registering font with Cyrillic support ===
     try:
-        # Путь к DejaVuSans (стандартный для Linux/WSL)
+        # Path to DejaVuSans
         font_path = "DejaVuSans.ttf"
         if not os.path.exists(font_path):
-            # Альтернатива: попробуем найти через matplotlib (часто есть)
             import matplotlib.font_manager as fm
             font_paths = fm.findfont("DejaVu Sans", fallback_to_default=False)
             if font_paths and os.path.exists(font_paths):
                 font_path = font_paths
             else:
-                # Если ничего не найдено — ошибка
                 raise FileNotFoundError("DejaVuSans.ttf not found")
         
         pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
@@ -273,7 +271,7 @@ def generate_pdf_report():
         logger.error(f"Failed to load Cyrillic font: {e}. Falling back to default (may break Cyrillic).")
         font_name = 'Helvetica'
 
-    # === Настройка стилей с кириллическим шрифтом ===
+    # === Setting styles with Cyrillic font support ===
     styles = getSampleStyleSheet()
     title_style = ParagraphStyle(
         'CustomTitle',
@@ -281,7 +279,7 @@ def generate_pdf_report():
         fontName=font_name,
         fontSize=18,
         spaceAfter=14,
-        alignment=1  # center
+        alignment=1 
     )
     normal_style = ParagraphStyle(
         'CustomNormal',
@@ -298,19 +296,19 @@ def generate_pdf_report():
         spaceAfter=10
     )
 
-    # === Сборка документа ===
+    # === Document Assembly ===
     doc = SimpleDocTemplate(pdf_path, pagesize=A4)
     elements = []
 
-    # Заголовок (на русском или английском — ваш выбор)
+    # Title
     elements.append(Paragraph("Аналитическая панель технической поддержки", title_style))
     elements.append(Paragraph("Курсовая работа по системному программированию", normal_style))
-    elements.append(Paragraph("Группа: RK_2_MASTERS_IU8_BMSTU_2025", normal_style))
-    elements.append(Paragraph("Автор: Бородин Глеб, ИУ8", normal_style))
+    elements.append(Paragraph("Группа: ИУ8-13М", normal_style))
+    elements.append(Paragraph("Автор: Бородин Глеб", normal_style))
     elements.append(Paragraph(f"Дата формирования отчёта: {datetime.now().strftime('%d.%m.%Y %H:%M')}", normal_style))
     elements.append(Spacer(1, 0.2 * inch))
 
-    # Введение
+    # Introduction
     intro = (
         "Данный отчёт представляет комплексный анализ данных тикетов технической поддержки "
         "за последние 30 дней. Визуализации включают динамику обращений, распределение по категориям, "
@@ -319,7 +317,7 @@ def generate_pdf_report():
     elements.append(Paragraph(intro, normal_style))
     elements.append(Spacer(1, 0.3 * inch))
 
-    # Графики
+    # Grafics
     figure_files = [
         ("Динамика создания тикетов", "ticket_trend.png"),
         ("Распределение тикетов по часам", "ticket_by_hour.png"),
@@ -341,7 +339,7 @@ def generate_pdf_report():
         else:
             logger.warning(f"PDF: пропущен отсутствующий файл: {filename}")
 
-    # Таблица ТОП-5
+    # Table TOP-5 categories
     elements.append(Paragraph("ТОП-5 самых проблемных категорий", heading2_style))
     csv_path = os.path.join(OUTPUT_DIR, "top5_categories.csv")
     if os.path.exists(csv_path):
@@ -361,7 +359,7 @@ def generate_pdf_report():
     else:
         elements.append(Paragraph("Данные о категориях недоступны.", normal_style))
 
-    # Формирование PDF
+    # Create PDF
     try:
         doc.build(elements)
         logger.info(f"PDF-отчёт успешно сохранён: {pdf_path}")
